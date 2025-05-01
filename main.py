@@ -11,7 +11,8 @@ from telegram.ext import (
     CallbackContext
 )
 from telegram import Update, ForceReply
-
+from google.cloud import dialogflow
+from test import detect_intent_texts
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
@@ -20,8 +21,6 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-# Define a few command handlers. These usually take the two arguments update and
-# context.
 def start(update: Update, context: CallbackContext) -> None:
     """Send a message when the command /start is issued."""
     user = update.effective_user
@@ -41,6 +40,17 @@ def echo(update: Update, context: CallbackContext) -> None:
     update.message.reply_text(update.message.text)
 
 
+def handle_message(update, context):
+    user_text = update.message.text
+    user_id = os.getenv("TG_ID")
+    response_text = detect_intent_texts(
+        os.getenv("GCLOUD_PROJECT_ID"),
+        user_id,
+        user_text
+    )
+    update.message.reply_text(response_text)
+
+
 def main() -> None:
     """Start the bot."""
     load_dotenv()
@@ -53,13 +63,10 @@ def main() -> None:
     dispatcher.add_handler(CommandHandler("start", start))
     dispatcher.add_handler(CommandHandler("help", help_command))
 
-    dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, echo))
+    dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, handle_message))
 
     updater.start_polling()
 
-    # Run the bot until you press Ctrl-C or the process receives SIGINT,
-    # SIGTERM or SIGABRT. This should be used most of the time, since
-    # start_polling() is non-blocking and will stop the bot gracefully.
     updater.idle()
 
 
