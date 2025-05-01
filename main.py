@@ -12,7 +12,7 @@ from telegram.ext import (
 )
 from telegram import Update, ForceReply
 from google.cloud import dialogflow
-from test import detect_intent_texts
+from gcloud import detect_intent_texts
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
