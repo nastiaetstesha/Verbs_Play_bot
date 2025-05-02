@@ -1,13 +1,4 @@
-from dotenv import load_dotenv
 from google.cloud import dialogflow
-import os
-
-
-load_dotenv()
-
-tg_id = os.getenv("TG_ID")
-session_id = tg_id
-project_id = os.getenv("GCLOUD_PROJECT_ID")
 
 
 def detect_intent_texts(

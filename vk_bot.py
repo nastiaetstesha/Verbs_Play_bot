@@ -5,6 +5,8 @@ from vk_api.longpoll import VkLongPoll, VkEventType
 from dotenv import load_dotenv
 import os
 from gcloud import detect_intent_texts
+from telegram import Bot
+from telegram_logs import TelegramLogsHandler
 
 
 logging.basicConfig(
@@ -47,8 +49,15 @@ def handle_event(event):
 
 if __name__ == "__main__":
     load_dotenv()
+    
     token = os.getenv("VK_API_KEY")
     project_id = os.getenv("GCLOUD_PROJECT_ID")
+    admin_chat_id = os.getenv("TG_ADMIN_CHAT_ID")
+    telegram_token = os.getenv("TG_TOKEN")
+
+    bot = Bot(token=telegram_token)
+    logger = logging.getLogger()
+    logger.addHandler(TelegramLogsHandler(bot, chat_id=admin_chat_id))
 
     try:
         logging.info("Запуск бота...")
