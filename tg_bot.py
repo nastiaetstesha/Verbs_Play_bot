@@ -63,7 +63,9 @@ def main() -> None:
     dispatcher.add_handler(CommandHandler("start", start))
     dispatcher.add_handler(CommandHandler("help", help_command))
 
-    dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, handle_message))
+    dispatcher.add_handler(
+        MessageHandler(Filters.text & ~Filters.command, handle_message)
+        )
 
     updater.start_polling()
 

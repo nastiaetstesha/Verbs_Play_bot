@@ -20,11 +20,19 @@ def handle_event(event):
     logging.info(f"Сообщение от пользователя {user_id}: {user_text}")
 
     try:
-        reply = detect_intent_texts(
+        reply, is_fallback = detect_intent_texts(
             project_id=project_id,
             session_id=str(user_id),
-            text=user_text
+            text=user_text,
+            return_fallback=True
         )
+
+        if is_fallback:
+            logging.info(
+                "❗ Не удалось распознать намерение. Ответ не отправлен."
+                )
+            return
+
     except Exception as e:
         logging.error("Ошибка при обращении к Dialogflow", exc_info=e)
         reply = "Упс! Что-то пошло не так, попробуй ещё раз позже."
@@ -35,7 +43,6 @@ def handle_event(event):
         random_id=random.randint(1, 1_000_000)
     )
     logging.info(f"Ответ пользователю {user_id}: {reply}")
-
 
 
 if __name__ == "__main__":
