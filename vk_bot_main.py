@@ -4,6 +4,7 @@ import vk_api as vk
 from vk_api.longpoll import VkLongPoll, VkEventType
 from dotenv import load_dotenv
 import os
+from gcloud import detect_intent_texts
 
 
 logging.basicConfig(
@@ -12,22 +13,35 @@ logging.basicConfig(
 )
 
 
-def echo(event, vk_api):
-    message = event.text
+def handle_event(event):
     user_id = event.user_id
-    logging.info(f"Новое сообщение от пользователя {user_id}: {message}")
+    user_text = event.text
+
+    logging.info(f"Сообщение от пользователя {user_id}: {user_text}")
+
+    try:
+        reply = detect_intent_texts(
+            project_id=project_id,
+            session_id=str(user_id),
+            text=user_text
+        )
+    except Exception as e:
+        logging.error("Ошибка при обращении к Dialogflow", exc_info=e)
+        reply = "Упс! Что-то пошло не так, попробуй ещё раз позже."
 
     vk_api.messages.send(
         user_id=user_id,
-        message=message,
-        random_id=random.randint(1, 1000000)
+        message=reply,
+        random_id=random.randint(1, 1_000_000)
     )
-    logging.info(f"Отправлено сообщение: {message}")
+    logging.info(f"Ответ пользователю {user_id}: {reply}")
+
 
 
 if __name__ == "__main__":
     load_dotenv()
     token = os.getenv("VK_API_KEY")
+    project_id = os.getenv("GCLOUD_PROJECT_ID")
 
     try:
         logging.info("Запуск бота...")
@@ -37,7 +51,7 @@ if __name__ == "__main__":
 
         for event in longpoll.listen():
             if event.type == VkEventType.MESSAGE_NEW and event.to_me:
-                echo(event, vk_api)
+                handle_event(event)
 
     except Exception as e:
         logging.error("Произошла ошибка:", exc_info=e)
