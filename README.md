@@ -4,8 +4,12 @@
 
 📌 Примеры:
 - Telegram: [t.me/Verbs_Play_bot](https://t.me/Verbs_Play_bot)
+
+![alt-text](link)
+
 - VK: [vk.com/club75514542](https://vk.com/club75514542)
 
+![alt-text](link)
 ---
 
 ## 🚀 Функциональность
