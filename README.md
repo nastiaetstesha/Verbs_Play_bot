@@ -5,12 +5,13 @@
 📌 Примеры:
 - Telegram: [t.me/Verbs_Play_bot](https://t.me/Verbs_Play_bot)
 
-![tg bot gif](![image](https://github.com/user-attachments/assets/489a1fe3-8961-4a2d-94ae-b6ae7bcf2cd1)
+![tg bot gif](https://github.com/user-attachments/assets/d266b1e4-e557-417f-81ed-aed9c69792e4)
+
 
 
 - VK: [vk.com/club75514542](https://vk.com/club75514542)
 
-![vk bot](![image](https://github.com/user-attachments/assets/cdc448b6-3dfc-45e0-b84e-f4b3e7ec2f93)
+![vk bot](https://github.com/user-attachments/assets/cdc448b6-3dfc-45e0-b84e-f4b3e7ec2f93)
 
 
 ---
