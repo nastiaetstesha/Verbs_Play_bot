@@ -32,8 +32,6 @@ def create_intent(
         request={"parent": parent, "intent": intent}
     )
 
-    print(f"✅ Intent создан: {display_name}")
-
 
 def create_all_intents_from_json(json_path, project_id):
     with open(json_path, 'r', encoding='utf-8') as file:

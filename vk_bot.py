@@ -7,15 +7,13 @@ import os
 from gcloud import detect_intent_texts
 from telegram import Bot
 from telegram_logs import TelegramLogsHandler
+from functools import partial
 
 
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s [%(levelname)s] %(message)s',
-)
+logger = logging.getLogger(__name__)
 
 
-def handle_event(event):
+def handle_event(event, vk_api, project_id):
     user_id = event.user_id
     user_text = event.text
 
@@ -24,7 +22,7 @@ def handle_event(event):
     try:
         reply, is_fallback = detect_intent_texts(
             project_id=project_id,
-            session_id=str(user_id),
+            session_id=f"vk-{user_id}",
             text=user_text,
             return_fallback=True
         )
@@ -35,8 +33,8 @@ def handle_event(event):
                 )
             return
 
-    except Exception as e:
-        logging.error("Ошибка при обращении к Dialogflow", exc_info=e)
+    except Exception:
+        logging.exception("Ошибка при обращении к Dialogflow")
         reply = "Упс! Что-то пошло не так, попробуй ещё раз позже."
 
     vk_api.messages.send(
@@ -48,15 +46,18 @@ def handle_event(event):
 
 
 if __name__ == "__main__":
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s [%(levelname)s] %(message)s',
+    )
     load_dotenv()
-    
-    token = os.getenv("VK_API_KEY")
-    project_id = os.getenv("GCLOUD_PROJECT_ID")
-    admin_chat_id = os.getenv("TG_ADMIN_CHAT_ID")
-    telegram_token = os.getenv("TG_TOKEN")
+
+    token = os.environ["VK_API_KEY"]
+    project_id = os.environ["GCLOUD_PROJECT_ID"]
+    admin_chat_id = os.environ["TG_ADMIN_CHAT_ID"]
+    telegram_token = os.environ["TG_TOKEN"]
 
     bot = Bot(token=telegram_token)
-    logger = logging.getLogger()
     logger.addHandler(TelegramLogsHandler(bot, chat_id=admin_chat_id))
 
     try:
@@ -65,9 +66,13 @@ if __name__ == "__main__":
         vk_api = vk_session.get_api()
         longpoll = VkLongPoll(vk_session)
 
+        event_handler = partial(
+            handle_event, vk_api=vk_api, project_id=project_id
+            )
+
         for event in longpoll.listen():
             if event.type == VkEventType.MESSAGE_NEW and event.to_me:
                 handle_event(event)
+    except Exception:
+        logging.exception("Произошла ошибка")
 
-    except Exception as e:
-        logging.error("Произошла ошибка:", exc_info=e)
