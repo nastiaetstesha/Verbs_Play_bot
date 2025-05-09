@@ -1,7 +1,7 @@
 import json
 import os
 from google.cloud import dialogflow
-
+from dotenv import load_dotenv
 
 def create_intent(
         project_id,
@@ -44,7 +44,6 @@ def create_all_intents_from_json(json_path, project_id):
 
 
 if __name__ == "__main__":
-    from dotenv import load_dotenv
     load_dotenv()
 
     project_id = os.getenv("GCLOUD_PROJECT_ID")
